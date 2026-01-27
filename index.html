@@ -17,6 +17,7 @@
             --dark-gray: #333;
             --success-green: #28a745;
             --danger-red: #dc3545;
+            --warning-orange: #fd7e14;
         }
 
         * {
@@ -79,7 +80,7 @@
         }
 
         .left-section {
-            max-width: 500px;
+            max-width: 600px;
         }
 
         @media (max-width: 768px) {
@@ -135,6 +136,140 @@
             border-color: var(--light-turquoise);
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 500px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Medewerker sectie */
+        .medewerker-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e0e0e0;
+        }
+
+        .medewerker-section h3 {
+            color: var(--dark-teal);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .medewerker-entry {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-bottom: 10px;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 8px;
+        }
+
+        .medewerker-entry .form-group {
+            margin-bottom: 0;
+            flex: 1;
+        }
+
+        .medewerker-entry .percentage-group {
+            width: 100px;
+            flex: 0 0 100px;
+        }
+
+        .medewerker-entry .calculated-amount {
+            width: 120px;
+            flex: 0 0 120px;
+            text-align: right;
+            padding: 12px;
+            background: #e8f4f3;
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--success-green);
+            font-size: 14px;
+        }
+
+        .btn-remove-medewerker {
+            background: var(--danger-red);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .btn-remove-medewerker:hover {
+            background: #c82333;
+        }
+
+        .btn-add-medewerker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--light-gray);
+            border: 2px dashed var(--light-turquoise);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--dark-teal);
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-add-medewerker:hover {
+            background: #e8f4f3;
+            border-color: var(--dark-teal);
+        }
+
+        .btn-add-medewerker:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-add-medewerker .plus-icon {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--light-turquoise);
+        }
+
+        /* Percentage totaal indicator */
+        .percentage-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .percentage-total.valid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .percentage-total.invalid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .percentage-total.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
         .btn {
             padding: 12px 24px;
             border: none;
@@ -149,11 +284,19 @@
             background: linear-gradient(135deg, var(--light-turquoise), var(--bright-turquoise));
             color: white;
             width: 100%;
+            margin-top: 20px;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         .btn-danger {
@@ -193,39 +336,85 @@
         /* Invoer lijst */
         .entry-list {
             margin-top: 20px;
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
         }
 
         .entry-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
+            padding: 15px;
             background: var(--light-gray);
             border-radius: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
-        .entry-info {
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .entry-project-info {
             flex: 1;
         }
 
-        .entry-info .medewerker {
-            font-weight: 600;
+        .entry-project-info .project-naam {
+            font-weight: 700;
             color: var(--dark-teal);
+            font-size: 1.1rem;
         }
 
-        .entry-info .details {
+        .entry-project-info .project-details {
             font-size: 12px;
             color: var(--gray);
             margin-top: 4px;
         }
 
-        .entry-bedrag {
+        .entry-totaal {
+            text-align: right;
+        }
+
+        .entry-totaal .label {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .entry-totaal .bedrag {
             font-weight: 700;
             color: var(--success-green);
-            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+
+        .entry-medewerkers {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .entry-medewerker-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .entry-medewerker-row .naam {
+            color: var(--dark-gray);
+        }
+
+        .entry-medewerker-row .percentage {
+            color: var(--gray);
+            margin-left: 10px;
+        }
+
+        .entry-medewerker-row .bedrag {
+            font-weight: 600;
+            color: var(--dark-teal);
+        }
+
+        .entry-actions {
+            margin-top: 10px;
+            text-align: right;
         }
 
         /* Samenvattingstabel */
@@ -313,6 +502,33 @@
         input::-webkit-calendar-picker-indicator {
             cursor: pointer;
         }
+
+        /* Scheiding secretariaat */
+        .section-divider {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .section-divider-text {
+            display: inline-block;
+            background: white;
+            padding: 8px 20px;
+            color: var(--success-green);
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .section-divider-line {
+            height: 6px;
+            background: var(--success-green);
+            border-radius: 3px;
+            margin-top: -20px;
+        }
     </style>
 </head>
 <body>
@@ -338,34 +554,67 @@
                 </div>
             </div>
 
-            <!-- Nieuw project invoeren - links -->
+            <!-- Scheiding voor secretariaat -->
+            <div class="section-divider">
+                <div class="section-divider-text">Secretariaat vult dit in</div>
+                <div class="section-divider-line"></div>
+            </div>
+
+            <!-- Nieuw project invoeren -->
             <div class="card left-section">
                 <h2>Nieuw Project Invoeren</h2>
                 
                 <div id="message" class="message"></div>
                 
                 <form id="projectForm">
-                    <div class="form-group">
-                        <label for="medewerker">Medewerker naam</label>
-                        <input type="text" id="medewerker" name="medewerker" list="medewerkerList" required placeholder="Voer naam in of selecteer">
-                        <datalist id="medewerkerList"></datalist>
+                    <!-- Project gegevens -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datum">Datum</label>
+                            <input type="date" id="datum" name="datum" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="projectnummer">Projectnummer</label>
+                            <input type="text" id="projectnummer" name="projectnummer" required placeholder="Bijv. PRJ-2024-001">
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="datum">Datum</label>
-                        <input type="date" id="datum" name="datum" required>
+                        <label for="projectnaam">Naam Project</label>
+                        <input type="text" id="projectnaam" name="projectnaam" required placeholder="Voer projectnaam in">
                     </div>
                     
                     <div class="form-group">
-                        <label for="bedrag">Verkoopbedrag (€)</label>
-                        <input type="number" id="bedrag" name="bedrag" step="0.01" min="0" required placeholder="0,00">
+                        <label for="totaalbedrag">Totaalbedrag (€)</label>
+                        <input type="number" id="totaalbedrag" name="totaalbedrag" step="0.01" min="0" required placeholder="0,00">
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Project Toevoegen</button>
+                    <!-- Medewerkers sectie -->
+                    <div class="medewerker-section">
+                        <h3>Verdeling over Medewerkers</h3>
+                        
+                        <div id="medewerkerContainer">
+                            <!-- Medewerker entries worden hier dynamisch toegevoegd -->
+                        </div>
+                        
+                        <button type="button" id="btnAddMedewerker" class="btn-add-medewerker">
+                            <span class="plus-icon">+</span>
+                            <span>Medewerker toevoegen</span>
+                        </button>
+                        
+                        <div id="percentageTotal" class="percentage-total warning">
+                            <span>Totaal percentage:</span>
+                            <span id="percentageTotalValue">0%</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="btnSubmit" class="btn btn-primary" disabled>Project Toevoegen</button>
                 </form>
+                
+                <datalist id="medewerkerList"></datalist>
             </div>
 
-            <!-- Ingevoerde projecten - links onder het invoerformulier -->
+            <!-- Ingevoerde projecten -->
             <div class="card left-section">
                 <h2>Ingevoerde Projecten</h2>
                 <div id="entryList" class="entry-list">
@@ -383,6 +632,7 @@
         const STORAGE_KEY = 'verkoop_projecten';
         const MONTHS = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
         const CURRENT_YEAR = new Date().getFullYear();
+        const MAX_MEDEWERKERS = 8;
 
         // DOM elementen
         const projectForm = document.getElementById('projectForm');
@@ -391,6 +641,15 @@
         const summaryTableEl = document.getElementById('summaryTable');
         const medewerkerListEl = document.getElementById('medewerkerList');
         const currentYearEl = document.getElementById('currentYear');
+        const medewerkerContainer = document.getElementById('medewerkerContainer');
+        const btnAddMedewerker = document.getElementById('btnAddMedewerker');
+        const percentageTotalEl = document.getElementById('percentageTotal');
+        const percentageTotalValueEl = document.getElementById('percentageTotalValue');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const totaalbedragInput = document.getElementById('totaalbedrag');
+
+        // State
+        let medewerkerCount = 0;
 
         // Initialisatie
         document.addEventListener('DOMContentLoaded', function() {
@@ -399,44 +658,256 @@
             // Zet standaard datum op vandaag
             document.getElementById('datum').valueAsDate = new Date();
             
+            // Voeg eerste medewerker entry toe
+            addMedewerkerEntry();
+            
+            // Event listeners
+            btnAddMedewerker.addEventListener('click', addMedewerkerEntry);
+            totaalbedragInput.addEventListener('input', updateCalculatedAmounts);
+            
+            // Migreer oude data permanent (eenmalig)
+            migrateOldData();
+            
             // Laad en toon data
             renderAll();
         });
+        
+        // Migreer oude data formaat naar nieuw formaat (eenmalig)
+        function migrateOldData() {
+            const rawData = localStorage.getItem(STORAGE_KEY);
+            if (!rawData) return;
+            
+            try {
+                const parsed = JSON.parse(rawData);
+                let needsMigration = false;
+                
+                const migrated = parsed.map(entry => {
+                    // Check of entry al het nieuwe formaat heeft
+                    if (entry.medewerkers && Array.isArray(entry.medewerkers)) {
+                        return entry;
+                    }
+                    
+                    // Oude formaat gevonden, markeer voor migratie
+                    needsMigration = true;
+                    
+                    return {
+                        id: entry.id,
+                        datum: entry.datum,
+                        projectnummer: entry.projectnummer || 'LEGACY-' + entry.id,
+                        projectnaam: entry.projectnaam || `Project ${entry.medewerker || 'Onbekend'}`,
+                        totaalbedrag: entry.bedrag || 0,
+                        medewerkers: [{
+                            naam: entry.medewerker || 'Onbekend',
+                            percentage: 100,
+                            bedrag: entry.bedrag || 0
+                        }]
+                    };
+                });
+                
+                // Sla gemigreerde data permanent op
+                if (needsMigration) {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+                    console.log('Data gemigreerd naar nieuw formaat');
+                }
+            } catch (e) {
+                console.error('Fout bij migreren van data:', e);
+            }
+        }
+
+        // Medewerker entry toevoegen
+        function addMedewerkerEntry() {
+            if (medewerkerCount >= MAX_MEDEWERKERS) return;
+            
+            medewerkerCount++;
+            const entryId = medewerkerCount;
+            
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'medewerker-entry';
+            entryDiv.id = `medewerker-entry-${entryId}`;
+            entryDiv.innerHTML = `
+                <div class="form-group">
+                    <label for="medewerker-${entryId}">Medewerker</label>
+                    <input type="text" id="medewerker-${entryId}" name="medewerker-${entryId}" 
+                           list="medewerkerList" required placeholder="Naam medewerker"
+                           oninput="updatePercentageTotal()">
+                </div>
+                <div class="form-group percentage-group">
+                    <label for="percentage-${entryId}">%</label>
+                    <input type="number" id="percentage-${entryId}" name="percentage-${entryId}" 
+                           min="0" max="100" step="0.1" required placeholder="0"
+                           oninput="updatePercentageTotal(); updateCalculatedAmounts()">
+                </div>
+                <div class="calculated-amount" id="amount-${entryId}">€ 0</div>
+                ${medewerkerCount > 1 ? `
+                    <button type="button" class="btn-remove-medewerker" onclick="removeMedewerkerEntry(${entryId})">
+                        ×
+                    </button>
+                ` : ''}
+            `;
+            
+            medewerkerContainer.appendChild(entryDiv);
+            updateAddButton();
+            updatePercentageTotal();
+        }
+
+        // Medewerker entry verwijderen
+        function removeMedewerkerEntry(entryId) {
+            const entry = document.getElementById(`medewerker-entry-${entryId}`);
+            if (entry) {
+                entry.remove();
+                updateAddButton();
+                updatePercentageTotal();
+                updateCalculatedAmounts();
+            }
+        }
+
+        // Update add button state
+        function updateAddButton() {
+            const currentCount = medewerkerContainer.querySelectorAll('.medewerker-entry').length;
+            btnAddMedewerker.disabled = currentCount >= MAX_MEDEWERKERS;
+            
+            if (currentCount >= MAX_MEDEWERKERS) {
+                btnAddMedewerker.querySelector('span:last-child').textContent = `Maximum bereikt (${MAX_MEDEWERKERS})`;
+            } else {
+                btnAddMedewerker.querySelector('span:last-child').textContent = `Medewerker toevoegen (${currentCount}/${MAX_MEDEWERKERS})`;
+            }
+        }
+
+        // Update percentage totaal
+        function updatePercentageTotal() {
+            const entries = medewerkerContainer.querySelectorAll('.medewerker-entry');
+            let total = 0;
+            let allFilled = true;
+            
+            entries.forEach(entry => {
+                const percentageInput = entry.querySelector('input[type="number"]');
+                const medewerkerInput = entry.querySelector('input[type="text"]');
+                const percentage = parseFloat(percentageInput.value) || 0;
+                total += percentage;
+                
+                if (!medewerkerInput.value.trim() || !percentageInput.value) {
+                    allFilled = false;
+                }
+            });
+            
+            percentageTotalValueEl.textContent = `${total.toFixed(1)}%`;
+            
+            // Update styling based on total
+            percentageTotalEl.classList.remove('valid', 'invalid', 'warning');
+            if (total === 100) {
+                percentageTotalEl.classList.add('valid');
+            } else if (total > 100) {
+                percentageTotalEl.classList.add('invalid');
+            } else {
+                percentageTotalEl.classList.add('warning');
+            }
+            
+            // Enable/disable submit button
+            btnSubmit.disabled = !(total === 100 && allFilled && entries.length > 0);
+        }
+
+        // Update berekende bedragen
+        function updateCalculatedAmounts() {
+            const totaalbedrag = parseFloat(totaalbedragInput.value) || 0;
+            const entries = medewerkerContainer.querySelectorAll('.medewerker-entry');
+            
+            entries.forEach(entry => {
+                const percentageInput = entry.querySelector('input[type="number"]');
+                const amountEl = entry.querySelector('.calculated-amount');
+                const percentage = parseFloat(percentageInput.value) || 0;
+                const amount = (totaalbedrag * percentage) / 100;
+                amountEl.textContent = formatCurrency(amount);
+            });
+        }
 
         // Form submit handler
         projectForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const medewerker = document.getElementById('medewerker').value.trim();
             const datum = document.getElementById('datum').value;
-            const bedrag = parseFloat(document.getElementById('bedrag').value);
+            const projectnummer = document.getElementById('projectnummer').value.trim();
+            const projectnaam = document.getElementById('projectnaam').value.trim();
+            const totaalbedrag = parseFloat(document.getElementById('totaalbedrag').value);
             
-            if (!medewerker || !datum || isNaN(bedrag)) {
-                showMessage('Vul alle velden correct in', 'error');
+            // Verzamel medewerker data
+            const medewerkers = [];
+            const entries = medewerkerContainer.querySelectorAll('.medewerker-entry');
+            let totalPercentage = 0;
+            
+            entries.forEach(entry => {
+                const medewerkerInput = entry.querySelector('input[type="text"]');
+                const percentageInput = entry.querySelector('input[type="number"]');
+                const naam = medewerkerInput.value.trim();
+                const percentage = parseFloat(percentageInput.value) || 0;
+                
+                if (naam && percentage > 0) {
+                    const bedrag = (totaalbedrag * percentage) / 100;
+                    medewerkers.push({
+                        naam: naam,
+                        percentage: percentage,
+                        bedrag: bedrag
+                    });
+                    totalPercentage += percentage;
+                }
+            });
+            
+            // Validatie
+            if (!datum || !projectnummer || !projectnaam || isNaN(totaalbedrag)) {
+                showMessage('Vul alle projectvelden correct in', 'error');
+                return;
+            }
+            
+            if (medewerkers.length === 0) {
+                showMessage('Voeg minimaal één medewerker toe', 'error');
+                return;
+            }
+            
+            if (Math.abs(totalPercentage - 100) > 0.01) {
+                showMessage(`Percentages moeten optellen tot 100% (nu: ${totalPercentage.toFixed(1)}%)`, 'error');
                 return;
             }
             
             const entry = {
                 id: Date.now(),
-                medewerker: medewerker,
                 datum: datum,
-                bedrag: bedrag
+                projectnummer: projectnummer,
+                projectnaam: projectnaam,
+                totaalbedrag: totaalbedrag,
+                medewerkers: medewerkers
             };
             
             saveEntry(entry);
-            showMessage(`Project voor ${medewerker} succesvol toegevoegd!`, 'success');
+            showMessage(`Project "${projectnaam}" succesvol toegevoegd!`, 'success');
             
-            // Reset form (behalve medewerker voor snelle invoer)
-            document.getElementById('bedrag').value = '';
-            document.getElementById('datum').valueAsDate = new Date();
-            
+            // Reset form
+            resetForm();
             renderAll();
         });
+
+        // Form resetten
+        function resetForm() {
+            document.getElementById('projectnummer').value = '';
+            document.getElementById('projectnaam').value = '';
+            document.getElementById('totaalbedrag').value = '';
+            document.getElementById('datum').valueAsDate = new Date();
+            
+            // Reset medewerker entries
+            medewerkerContainer.innerHTML = '';
+            medewerkerCount = 0;
+            addMedewerkerEntry();
+        }
 
         // Data functies
         function loadData() {
             const data = localStorage.getItem(STORAGE_KEY);
-            return data ? JSON.parse(data) : [];
+            if (!data) return [];
+            
+            try {
+                return JSON.parse(data);
+            } catch (e) {
+                console.error('Fout bij laden van data:', e);
+                return [];
+            }
         }
 
         function saveEntry(entry) {
@@ -475,16 +946,42 @@
             // Sorteer op datum (nieuwste eerst)
             const sortedData = [...data].sort((a, b) => new Date(b.datum) - new Date(a.datum));
             
-            entryListEl.innerHTML = sortedData.map(entry => `
+            entryListEl.innerHTML = sortedData.map(entry => {
+                const medewerkers = entry.medewerkers || [];
+                const projectnaam = entry.projectnaam || 'Onbekend project';
+                const projectnummer = entry.projectnummer || '-';
+                const totaalbedrag = entry.totaalbedrag || 0;
+                
+                return `
                 <div class="entry-item">
-                    <div class="entry-info">
-                        <div class="medewerker">${escapeHtml(entry.medewerker)}</div>
-                        <div class="details">${formatDate(entry.datum)}</div>
+                    <div class="entry-header">
+                        <div class="entry-project-info">
+                            <div class="project-naam">${escapeHtml(projectnaam)}</div>
+                            <div class="project-details">
+                                ${escapeHtml(projectnummer)} | ${formatDate(entry.datum)}
+                            </div>
+                        </div>
+                        <div class="entry-totaal">
+                            <div class="label">Totaalbedrag</div>
+                            <div class="bedrag">${formatCurrency(totaalbedrag)}</div>
+                        </div>
                     </div>
-                    <div class="entry-bedrag">${formatCurrency(entry.bedrag)}</div>
-                    <button class="btn btn-danger" onclick="deleteEntry(${entry.id})">Verwijderen</button>
+                    <div class="entry-medewerkers">
+                        ${medewerkers.map(m => `
+                            <div class="entry-medewerker-row">
+                                <span>
+                                    <span class="naam">${escapeHtml(m.naam || 'Onbekend')}</span>
+                                    <span class="percentage">(${m.percentage || 0}%)</span>
+                                </span>
+                                <span class="bedrag">${formatCurrency(m.bedrag || 0)}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="entry-actions">
+                        <button class="btn btn-danger" onclick="deleteEntry(${entry.id})">Verwijderen</button>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         function renderSummaryTable() {
@@ -562,16 +1059,22 @@
             
             data.forEach(entry => {
                 const month = new Date(entry.datum).getMonth();
-                const medewerker = entry.medewerker;
+                const medewerkers = entry.medewerkers || [];
                 
-                // Per medewerker
-                if (!result.perMedewerker[medewerker]) {
-                    result.perMedewerker[medewerker] = {};
-                }
-                result.perMedewerker[medewerker][month] = (result.perMedewerker[medewerker][month] || 0) + entry.bedrag;
-                
-                // Per maand totaal
-                result.perMaand[month] = (result.perMaand[month] || 0) + entry.bedrag;
+                // Loop door medewerkers van dit project
+                medewerkers.forEach(m => {
+                    const medewerker = m.naam || 'Onbekend';
+                    const bedrag = m.bedrag || 0;
+                    
+                    // Per medewerker
+                    if (!result.perMedewerker[medewerker]) {
+                        result.perMedewerker[medewerker] = {};
+                    }
+                    result.perMedewerker[medewerker][month] = (result.perMedewerker[medewerker][month] || 0) + bedrag;
+                    
+                    // Per maand totaal
+                    result.perMaand[month] = (result.perMaand[month] || 0) + bedrag;
+                });
             });
             
             return result;
@@ -579,9 +1082,21 @@
 
         function updateMedewerkerDatalist() {
             const data = loadData();
-            const uniqueMedewerkers = [...new Set(data.map(entry => entry.medewerker))].sort();
+            const allMedewerkers = [];
             
-            medewerkerListEl.innerHTML = uniqueMedewerkers.map(naam => 
+            data.forEach(entry => {
+                const medewerkers = entry.medewerkers || [];
+                medewerkers.forEach(m => {
+                    const naam = m.naam || '';
+                    if (naam && !allMedewerkers.includes(naam)) {
+                        allMedewerkers.push(naam);
+                    }
+                });
+            });
+            
+            allMedewerkers.sort();
+            
+            medewerkerListEl.innerHTML = allMedewerkers.map(naam => 
                 `<option value="${escapeHtml(naam)}">`
             ).join('');
         }
@@ -593,7 +1108,7 @@
             
             setTimeout(() => {
                 messageEl.classList.remove('show');
-            }, 3000);
+            }, 4000);
         }
 
         function formatCurrency(amount, showDecimals = true) {
