@@ -43,7 +43,19 @@
             border-radius: 15px;
             margin-bottom: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-logo {
+            height: 120px;
+            width: auto;
+        }
+
+        .header-text {
+            flex: 1;
+            text-align: right;
         }
 
         .header h1 {
@@ -57,14 +69,27 @@
         }
 
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
 
-        @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
+        .full-width {
+            width: 100%;
+        }
+
+        .left-section {
+            max-width: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .left-section {
+                max-width: 100%;
             }
         }
 
@@ -293,60 +318,60 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Q-Consult Zorg - Verkoopdashboard</h1>
+            <img src="logo.png" alt="Q-Consult Zorg Logo" class="header-logo">
+            <div class="header-text">
+                <h1>Q-Consult Zorg - Verkoopdashboard</h1>
+            </div>
         </div>
 
         <div class="main-content">
-            <!-- Onderdeel 1: Invoeren -->
-            <div class="left-column">
-                <div class="card">
-                    <h2>Nieuw Project Invoeren</h2>
-                    
-                    <div id="message" class="message"></div>
-                    
-                    <form id="projectForm">
-                        <div class="form-group">
-                            <label for="medewerker">Medewerker naam</label>
-                            <input type="text" id="medewerker" name="medewerker" list="medewerkerList" required placeholder="Voer naam in of selecteer">
-                            <datalist id="medewerkerList"></datalist>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="datum">Datum</label>
-                            <input type="date" id="datum" name="datum" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="bedrag">Verkoopbedrag (€)</label>
-                            <input type="number" id="bedrag" name="bedrag" step="0.01" min="0" required placeholder="0,00">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Project Toevoegen</button>
-                    </form>
-                </div>
-
-                <div class="card">
-                    <h2>Ingevoerde Projecten</h2>
-                    <div id="entryList" class="entry-list">
+            <!-- Samenvatting tabel - volle breedte bovenaan -->
+            <div class="card full-width">
+                <h2>Samenvatting per Medewerker per Maand (<span id="currentYear"></span>)</h2>
+                <div class="summary-table-container">
+                    <div id="summaryTable">
                         <div class="no-data">
-                            <div class="no-data-icon">📋</div>
-                            <p>Nog geen projecten ingevoerd</p>
+                            <div class="no-data-icon">📊</div>
+                            <p>Voer projecten in om de samenvatting te zien</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Onderdeel 2: Bekijken -->
-            <div class="right-column">
-                <div class="card" style="width: 100%;">
-                    <h2>Samenvatting per Medewerker per Maand (<span id="currentYear"></span>)</h2>
-                    <div class="summary-table-container">
-                        <div id="summaryTable">
-                            <div class="no-data">
-                                <div class="no-data-icon">📊</div>
-                                <p>Voer projecten in om de samenvatting te zien</p>
-                            </div>
-                        </div>
+            <!-- Nieuw project invoeren - links -->
+            <div class="card left-section">
+                <h2>Nieuw Project Invoeren</h2>
+                
+                <div id="message" class="message"></div>
+                
+                <form id="projectForm">
+                    <div class="form-group">
+                        <label for="medewerker">Medewerker naam</label>
+                        <input type="text" id="medewerker" name="medewerker" list="medewerkerList" required placeholder="Voer naam in of selecteer">
+                        <datalist id="medewerkerList"></datalist>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="datum">Datum</label>
+                        <input type="date" id="datum" name="datum" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bedrag">Verkoopbedrag (€)</label>
+                        <input type="number" id="bedrag" name="bedrag" step="0.01" min="0" required placeholder="0,00">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Project Toevoegen</button>
+                </form>
+            </div>
+
+            <!-- Ingevoerde projecten - links onder het invoerformulier -->
+            <div class="card left-section">
+                <h2>Ingevoerde Projecten</h2>
+                <div id="entryList" class="entry-list">
+                    <div class="no-data">
+                        <div class="no-data-icon">📋</div>
+                        <p>Nog geen projecten ingevoerd</p>
                     </div>
                 </div>
             </div>
@@ -506,10 +531,10 @@
                 for (let month = 0; month < 12; month++) {
                     const bedrag = summary.perMedewerker[medewerker][month] || 0;
                     rowTotal += bedrag;
-                    html += `<td>${bedrag > 0 ? formatCurrency(bedrag) : '-'}</td>`;
+                    html += `<td>${bedrag > 0 ? formatCurrency(bedrag, false) : '-'}</td>`;
                 }
                 
-                html += `<td class="total-column">${formatCurrency(rowTotal)}</td></tr>`;
+                html += `<td class="total-column">${formatCurrency(rowTotal, false)}</td></tr>`;
             });
             
             // Totaal rij
@@ -519,10 +544,10 @@
             for (let month = 0; month < 12; month++) {
                 const monthTotal = summary.perMaand[month] || 0;
                 grandTotal += monthTotal;
-                html += `<td>${monthTotal > 0 ? formatCurrency(monthTotal) : '-'}</td>`;
+                html += `<td>${monthTotal > 0 ? formatCurrency(monthTotal, false) : '-'}</td>`;
             }
             
-            html += `<td class="total-column"><strong>${formatCurrency(grandTotal)}</strong></td></tr>`;
+            html += `<td class="total-column"><strong>${formatCurrency(grandTotal, false)}</strong></td></tr>`;
             
             html += '</tbody></table>';
             
@@ -571,10 +596,12 @@
             }, 3000);
         }
 
-        function formatCurrency(amount) {
+        function formatCurrency(amount, showDecimals = true) {
             return new Intl.NumberFormat('nl-NL', {
                 style: 'currency',
-                currency: 'EUR'
+                currency: 'EUR',
+                minimumFractionDigits: showDecimals ? 2 : 0,
+                maximumFractionDigits: showDecimals ? 2 : 0
             }).format(amount);
         }
 
