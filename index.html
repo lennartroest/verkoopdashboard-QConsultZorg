@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verkoop Dashboard - Project Invoer</title>
+    
+    <style>
+        :root {
+            --dark-teal: #2C5F6B;
+            --medium-teal: #3A6B7A;
+            --light-turquoise: #4ECDC4;
+            --bright-turquoise: #5FB3B3;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --gray: #666;
+            --dark-gray: #333;
+            --success-green: #28a745;
+            --danger-red: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--dark-teal) 0%, var(--medium-teal) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: var(--dark-teal);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .header p {
+            color: var(--gray);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: var(--dark-teal);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--light-turquoise);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--light-turquoise);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--light-turquoise), var(--bright-turquoise));
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        /* Invoer lijst */
+        .entry-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .entry-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .entry-info {
+            flex: 1;
+        }
+
+        .entry-info .medewerker {
+            font-weight: 600;
+            color: var(--dark-teal);
+        }
+
+        .entry-info .details {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+
+        .entry-bedrag {
+            font-weight: 700;
+            color: var(--success-green);
+            margin-right: 15px;
+        }
+
+        /* Samenvattingstabel */
+        .summary-table-container {
+            overflow-x: auto;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 12px 8px;
+            text-align: right;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-table th {
+            background: var(--dark-teal);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .summary-table th:first-child,
+        .summary-table td:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 1;
+        }
+
+        .summary-table th:first-child {
+            background: var(--dark-teal);
+            z-index: 2;
+        }
+
+        .summary-table tr:hover td {
+            background: #f0f9f8;
+        }
+
+        .summary-table tr:hover td:first-child {
+            background: #f0f9f8;
+        }
+
+        .summary-table .total-row {
+            font-weight: 700;
+            background: var(--light-gray);
+        }
+
+        .summary-table .total-row td {
+            border-top: 2px solid var(--dark-teal);
+        }
+
+        .summary-table .total-row td:first-child {
+            background: var(--light-gray);
+        }
+
+        .summary-table .total-column {
+            background: #e8f4f3 !important;
+            font-weight: 600;
+        }
+
+        .summary-table th.total-column {
+            background: var(--medium-teal) !important;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* Datalist styling */
+        input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Verkoop Dashboard</h1>
+            <p>Voer nieuwe verkoopprojecten in en bekijk de maandelijkse samenvatting</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Onderdeel 1: Invoeren -->
+            <div class="left-column">
+                <div class="card">
+                    <h2>Nieuw Project Invoeren</h2>
+                    
+                    <div id="message" class="message"></div>
+                    
+                    <form id="projectForm">
+                        <div class="form-group">
+                            <label for="medewerker">Medewerker naam</label>
+                            <input type="text" id="medewerker" name="medewerker" list="medewerkerList" required placeholder="Voer naam in of selecteer">
+                            <datalist id="medewerkerList"></datalist>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="datum">Datum</label>
+                            <input type="date" id="datum" name="datum" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bedrag">Verkoopbedrag (€)</label>
+                            <input type="number" id="bedrag" name="bedrag" step="0.01" min="0" required placeholder="0,00">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Project Toevoegen</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Ingevoerde Projecten</h2>
+                    <div id="entryList" class="entry-list">
+                        <div class="no-data">
+                            <div class="no-data-icon">📋</div>
+                            <p>Nog geen projecten ingevoerd</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onderdeel 2: Bekijken -->
+            <div class="right-column">
+                <div class="card" style="width: 100%;">
+                    <h2>Samenvatting per Medewerker per Maand (<span id="currentYear"></span>)</h2>
+                    <div class="summary-table-container">
+                        <div id="summaryTable">
+                            <div class="no-data">
+                                <div class="no-data-icon">📊</div>
+                                <p>Voer projecten in om de samenvatting te zien</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constanten
+        const STORAGE_KEY = 'verkoop_projecten';
+        const MONTHS = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+        const CURRENT_YEAR = new Date().getFullYear();
+
+        // DOM elementen
+        const projectForm = document.getElementById('projectForm');
+        const messageEl = document.getElementById('message');
+        const entryListEl = document.getElementById('entryList');
+        const summaryTableEl = document.getElementById('summaryTable');
+        const medewerkerListEl = document.getElementById('medewerkerList');
+        const currentYearEl = document.getElementById('currentYear');
+
+        // Initialisatie
+        document.addEventListener('DOMContentLoaded', function() {
+            currentYearEl.textContent = CURRENT_YEAR;
+            
+            // Zet standaard datum op vandaag
+            document.getElementById('datum').valueAsDate = new Date();
+            
+            // Laad en toon data
+            renderAll();
+        });
+
+        // Form submit handler
+        projectForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const medewerker = document.getElementById('medewerker').value.trim();
+            const datum = document.getElementById('datum').value;
+            const bedrag = parseFloat(document.getElementById('bedrag').value);
+            
+            if (!medewerker || !datum || isNaN(bedrag)) {
+                showMessage('Vul alle velden correct in', 'error');
+                return;
+            }
+            
+            const entry = {
+                id: Date.now(),
+                medewerker: medewerker,
+                datum: datum,
+                bedrag: bedrag
+            };
+            
+            saveEntry(entry);
+            showMessage(`Project voor ${medewerker} succesvol toegevoegd!`, 'success');
+            
+            // Reset form (behalve medewerker voor snelle invoer)
+            document.getElementById('bedrag').value = '';
+            document.getElementById('datum').valueAsDate = new Date();
+            
+            renderAll();
+        });
+
+        // Data functies
+        function loadData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveEntry(entry) {
+            const data = loadData();
+            data.push(entry);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function deleteEntry(id) {
+            let data = loadData();
+            data = data.filter(entry => entry.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            renderAll();
+        }
+
+        // Render functies
+        function renderAll() {
+            renderEntryList();
+            renderSummaryTable();
+            updateMedewerkerDatalist();
+        }
+
+        function renderEntryList() {
+            const data = loadData();
+            
+            if (data.length === 0) {
+                entryListEl.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📋</div>
+                        <p>Nog geen projecten ingevoerd</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sorteer op datum (nieuwste eerst)
+            const sortedData = [...data].sort((a, b) => new Date(b.datum) - new Date(a.datum));
+            
+            entryListEl.innerHTML = sortedData.map(entry => `
+                <div class="entry-item">
+                    <div class="entry-info">
+                        <div class="medewerker">${escapeHtml(entry.medewerker)}</div>
+                        <div class="details">${formatDate(entry.datum)}</div>
+                    </div>
+                    <div class="entry-bedrag">${formatCurrency(entry.bedrag)}</div>
+                    <button class="btn btn-danger" onclick="deleteEntry(${entry.id})">Verwijderen</button>
+                </div>
+            `).join('');
+        }
+
+        function renderSummaryTable() {
+            const data = loadData();
+            
+            // Filter alleen data van het huidige jaar
+            const currentYearData = data.filter(entry => {
+                const year = new Date(entry.datum).getFullYear();
+                return year === CURRENT_YEAR;
+            });
+            
+            if (currentYearData.length === 0) {
+                summaryTableEl.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📊</div>
+                        <p>Voer projecten in om de samenvatting te zien</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Bereken totalen per medewerker per maand
+            const summary = calculateMonthlyTotals(currentYearData);
+            
+            // Bouw tabel HTML
+            let html = '<table class="summary-table">';
+            
+            // Header rij
+            html += '<thead><tr><th>Medewerker</th>';
+            MONTHS.forEach(month => {
+                html += `<th>${month}</th>`;
+            });
+            html += '<th class="total-column">Totaal</th></tr></thead>';
+            
+            // Body
+            html += '<tbody>';
+            
+            // Data rijen per medewerker
+            const medewerkers = Object.keys(summary.perMedewerker).sort();
+            medewerkers.forEach(medewerker => {
+                html += `<tr><td>${escapeHtml(medewerker)}</td>`;
+                let rowTotal = 0;
+                
+                for (let month = 0; month < 12; month++) {
+                    const bedrag = summary.perMedewerker[medewerker][month] || 0;
+                    rowTotal += bedrag;
+                    html += `<td>${bedrag > 0 ? formatCurrency(bedrag) : '-'}</td>`;
+                }
+                
+                html += `<td class="total-column">${formatCurrency(rowTotal)}</td></tr>`;
+            });
+            
+            // Totaal rij
+            html += '<tr class="total-row"><td><strong>Totaal</strong></td>';
+            let grandTotal = 0;
+            
+            for (let month = 0; month < 12; month++) {
+                const monthTotal = summary.perMaand[month] || 0;
+                grandTotal += monthTotal;
+                html += `<td>${monthTotal > 0 ? formatCurrency(monthTotal) : '-'}</td>`;
+            }
+            
+            html += `<td class="total-column"><strong>${formatCurrency(grandTotal)}</strong></td></tr>`;
+            
+            html += '</tbody></table>';
+            
+            summaryTableEl.innerHTML = html;
+        }
+
+        function calculateMonthlyTotals(data) {
+            const result = {
+                perMedewerker: {},
+                perMaand: {}
+            };
+            
+            data.forEach(entry => {
+                const month = new Date(entry.datum).getMonth();
+                const medewerker = entry.medewerker;
+                
+                // Per medewerker
+                if (!result.perMedewerker[medewerker]) {
+                    result.perMedewerker[medewerker] = {};
+                }
+                result.perMedewerker[medewerker][month] = (result.perMedewerker[medewerker][month] || 0) + entry.bedrag;
+                
+                // Per maand totaal
+                result.perMaand[month] = (result.perMaand[month] || 0) + entry.bedrag;
+            });
+            
+            return result;
+        }
+
+        function updateMedewerkerDatalist() {
+            const data = loadData();
+            const uniqueMedewerkers = [...new Set(data.map(entry => entry.medewerker))].sort();
+            
+            medewerkerListEl.innerHTML = uniqueMedewerkers.map(naam => 
+                `<option value="${escapeHtml(naam)}">`
+            ).join('');
+        }
+
+        // Helper functies
+        function showMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = `message ${type} show`;
+            
+            setTimeout(() => {
+                messageEl.classList.remove('show');
+            }, 3000);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('nl-NL', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return new Intl.DateTimeFormat('nl-NL', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(date);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
