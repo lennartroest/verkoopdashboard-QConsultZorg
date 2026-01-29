@@ -530,13 +530,47 @@
             margin-top: -20px;
         }
     </style>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyBCD1NHnpqwKzoDTyu4G0FI5C6g63C6zJU",
+            authDomain: "verkoop-dashboard.firebaseapp.com",
+            projectId: "verkoop-dashboard",
+            storageBucket: "verkoop-dashboard.firebasestorage.app",
+            messagingSenderId: "244577697113",
+            appId: "1:244577697113:web:8925839486f2bd91fea048"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Maak Firebase beschikbaar voor de rest van de code
+        window.firebaseDb = db;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseGetDocs = getDocs;
+        window.firebaseDeleteDoc = deleteDoc;
+        window.firebaseDoc = doc;
+        window.firebaseOnSnapshot = onSnapshot;
+        window.firebaseQuery = query;
+        window.firebaseOrderBy = orderBy;
+
+        // Trigger dat Firebase geladen is
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <img src="logo.png" alt="Q-Consult Zorg Logo" class="header-logo">
             <div class="header-text">
-                <h1>Q-Consult Zorg - Verkoopdashboard</h1>
+                <h1>Verkoopdashboard</h1>
             </div>
         </div>
 
@@ -629,10 +663,10 @@
 
     <script>
         // Constanten
-        const STORAGE_KEY = 'verkoop_projecten';
         const MONTHS = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
         const CURRENT_YEAR = new Date().getFullYear();
         const MAX_MEDEWERKERS = 8;
+        const COLLECTION_NAME = 'projecten';
 
         // DOM elementen
         const projectForm = document.getElementById('projectForm');
@@ -650,9 +684,15 @@
 
         // State
         let medewerkerCount = 0;
+        let cachedData = []; // Cache voor data uit Firebase
+
+        // Wacht tot Firebase geladen is
+        window.addEventListener('firebaseReady', function() {
+            initApp();
+        });
 
         // Initialisatie
-        document.addEventListener('DOMContentLoaded', function() {
+        function initApp() {
             currentYearEl.textContent = CURRENT_YEAR;
             
             // Zet standaard datum op vandaag
@@ -665,53 +705,31 @@
             btnAddMedewerker.addEventListener('click', addMedewerkerEntry);
             totaalbedragInput.addEventListener('input', updateCalculatedAmounts);
             
-            // Migreer oude data permanent (eenmalig)
-            migrateOldData();
+            // Start realtime listener voor automatische updates
+            setupRealtimeListener();
+        }
+
+        // Realtime listener - update automatisch als data verandert
+        function setupRealtimeListener() {
+            const db = window.firebaseDb;
+            const projectenRef = window.firebaseCollection(db, COLLECTION_NAME);
             
-            // Laad en toon data
-            renderAll();
-        });
-        
-        // Migreer oude data formaat naar nieuw formaat (eenmalig)
-        function migrateOldData() {
-            const rawData = localStorage.getItem(STORAGE_KEY);
-            if (!rawData) return;
-            
-            try {
-                const parsed = JSON.parse(rawData);
-                let needsMigration = false;
-                
-                const migrated = parsed.map(entry => {
-                    // Check of entry al het nieuwe formaat heeft
-                    if (entry.medewerkers && Array.isArray(entry.medewerkers)) {
-                        return entry;
-                    }
-                    
-                    // Oude formaat gevonden, markeer voor migratie
-                    needsMigration = true;
-                    
-                    return {
-                        id: entry.id,
-                        datum: entry.datum,
-                        projectnummer: entry.projectnummer || 'LEGACY-' + entry.id,
-                        projectnaam: entry.projectnaam || `Project ${entry.medewerker || 'Onbekend'}`,
-                        totaalbedrag: entry.bedrag || 0,
-                        medewerkers: [{
-                            naam: entry.medewerker || 'Onbekend',
-                            percentage: 100,
-                            bedrag: entry.bedrag || 0
-                        }]
-                    };
+            window.firebaseOnSnapshot(projectenRef, (snapshot) => {
+                cachedData = [];
+                snapshot.forEach((doc) => {
+                    cachedData.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
                 });
                 
-                // Sla gemigreerde data permanent op
-                if (needsMigration) {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-                    console.log('Data gemigreerd naar nieuw formaat');
-                }
-            } catch (e) {
-                console.error('Fout bij migreren van data:', e);
-            }
+                // Render de UI met de nieuwe data
+                renderAll();
+                console.log('Data gesynchroniseerd:', cachedData.length, 'projecten');
+            }, (error) => {
+                console.error('Fout bij realtime listener:', error);
+                showMessage('Fout bij laden van data. Controleer je internetverbinding.', 'error');
+            });
         }
 
         // Medewerker entry toevoegen
@@ -821,7 +839,7 @@
         }
 
         // Form submit handler
-        projectForm.addEventListener('submit', function(e) {
+        projectForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const datum = document.getElementById('datum').value;
@@ -868,7 +886,7 @@
             }
             
             const entry = {
-                id: Date.now(),
+                createdAt: Date.now(),
                 datum: datum,
                 projectnummer: projectnummer,
                 projectnaam: projectnaam,
@@ -876,12 +894,21 @@
                 medewerkers: medewerkers
             };
             
-            saveEntry(entry);
-            showMessage(`Project "${projectnaam}" succesvol toegevoegd!`, 'success');
+            // Disable submit button tijdens opslaan
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Opslaan...';
             
-            // Reset form
-            resetForm();
-            renderAll();
+            try {
+                await saveEntry(entry);
+                showMessage(`Project "${projectnaam}" succesvol toegevoegd!`, 'success');
+                resetForm();
+            } catch (error) {
+                console.error('Fout bij opslaan:', error);
+                showMessage('Fout bij opslaan. Probeer opnieuw.', 'error');
+            } finally {
+                btnSubmit.textContent = 'Project Toevoegen';
+                updatePercentageTotal(); // Reset button state
+            }
         });
 
         // Form resetten
@@ -897,30 +924,32 @@
             addMedewerkerEntry();
         }
 
-        // Data functies
+        // Data functies - Firebase Firestore
         function loadData() {
-            const data = localStorage.getItem(STORAGE_KEY);
-            if (!data) return [];
+            // Gebruik gecachte data (wordt bijgewerkt door realtime listener)
+            return cachedData;
+        }
+
+        async function saveEntry(entry) {
+            const db = window.firebaseDb;
+            const projectenRef = window.firebaseCollection(db, COLLECTION_NAME);
+            await window.firebaseAddDoc(projectenRef, entry);
+        }
+
+        async function deleteEntry(id) {
+            if (!confirm('Weet je zeker dat je dit project wilt verwijderen?')) {
+                return;
+            }
             
             try {
-                return JSON.parse(data);
-            } catch (e) {
-                console.error('Fout bij laden van data:', e);
-                return [];
+                const db = window.firebaseDb;
+                const docRef = window.firebaseDoc(db, COLLECTION_NAME, id);
+                await window.firebaseDeleteDoc(docRef);
+                showMessage('Project verwijderd', 'success');
+            } catch (error) {
+                console.error('Fout bij verwijderen:', error);
+                showMessage('Fout bij verwijderen. Probeer opnieuw.', 'error');
             }
-        }
-
-        function saveEntry(entry) {
-            const data = loadData();
-            data.push(entry);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
-        function deleteEntry(id) {
-            let data = loadData();
-            data = data.filter(entry => entry.id !== id);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            renderAll();
         }
 
         // Render functies
@@ -978,7 +1007,7 @@
                         `).join('')}
                     </div>
                     <div class="entry-actions">
-                        <button class="btn btn-danger" onclick="deleteEntry(${entry.id})">Verwijderen</button>
+                        <button class="btn btn-danger" onclick="deleteEntry('${entry.id}')">Verwijderen</button>
                     </div>
                 </div>
             `}).join('');
